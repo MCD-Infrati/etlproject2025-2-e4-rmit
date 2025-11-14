@@ -55,6 +55,9 @@
 				},
 				{
 					"name": "DerivedColumYear"
+				},
+				{
+					"name": "ColumnsDerivedFinal"
 				}
 			],
 			"scriptLines": [
@@ -165,7 +168,13 @@
 				"join3 derive(GrLivArea = toInteger({1st Flr SF}) + toInteger({2nd Flr SF}) + toInteger({Low Qual Fin SF})\r",
 				") ~> derivedCalculations1",
 				"derivedCalculations1 derive(YrSold = year({Sale Date}),",
-				"          MoSold = month({Sale Date})) ~> DerivedColumYear"
+				"          MoSold = month({Sale Date})) ~> DerivedColumYear",
+				"DerivedColumYear derive(GrLivArea = toInteger({1st Flr SF}) + toInteger({2nd Flr SF}) + toInteger({Low Qual Fin SF}),",
+				"          YearRemodAdd = iif(\r",
+				"    isNull(`Year Remod/Add`) || trim(toString(`Year Remod/Add`)) == '',\r",
+				"    `Year Built`,\r",
+				"    `Year Remod/Add`\r",
+				")) ~> ColumnsDerivedFinal"
 			]
 		}
 	}
