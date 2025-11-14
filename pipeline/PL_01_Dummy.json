@@ -1,0 +1,9 @@
+{
+	"name": "PL_01_Dummy",
+	"properties": {
+		"folder": {
+			"name": "01_Ingest"
+		},
+		"annotations": []
+	}
+}
