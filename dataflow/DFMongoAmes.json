@@ -1,0 +1,32 @@
+{
+	"name": "DFMongoAmes",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AmesProperty_CSV",
+						"type": "DatasetReference"
+					},
+					"name": "srcAmesBase"
+				},
+				{
+					"name": "srcMongoGarage"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          {PID;Lot Frontage;Lot Area;Street;Alley;Lot Shape;Land Contour;Utilities;Lot Config;Land Slope;Neighborhood;Condition 1;Condition 2;Bldg Type;House Style;Overall Qual;Overall Cond;Year Built;Year Remod/Add} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> srcAmesBase",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false) ~> srcMongoGarage"
+			]
+		}
+	}
+}
