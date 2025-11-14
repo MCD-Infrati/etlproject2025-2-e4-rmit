@@ -52,6 +52,9 @@
 				},
 				{
 					"name": "derivedCalculations1"
+				},
+				{
+					"name": "DerivedColumYear"
 				}
 			],
 			"scriptLines": [
@@ -159,7 +162,10 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join3",
-				"join3 derive() ~> derivedCalculations1"
+				"join3 derive(GrLivArea = toInteger({1st Flr SF}) + toInteger({2nd Flr SF}) + toInteger({Low Qual Fin SF})\r",
+				") ~> derivedCalculations1",
+				"derivedCalculations1 derive(YrSold = year({Sale Date}),",
+				"          MoSold = month({Sale Date})) ~> DerivedColumYear"
 			]
 		}
 	}
