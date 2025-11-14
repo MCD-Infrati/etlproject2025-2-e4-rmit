@@ -34,12 +34,28 @@
 				}
 			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "aggFloorDetail"
+				},
+				{
+					"name": "join2"
+				},
+				{
+					"name": "convSalesProperties"
+				},
+				{
+					"name": "join3"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
-				"          PID as string,",
-				"          {Lot Frontage} as string,",
-				"          {Lot Area} as string,",
+				"          PID as integer,",
+				"          {Lot Frontage} as integer,",
+				"          {Lot Area} as integer,",
 				"          Street as string,",
 				"          Alley as string,",
 				"          {Lot Shape} as string,",
@@ -52,10 +68,10 @@
 				"          {Condition 2} as string,",
 				"          {Bldg Type} as string,",
 				"          {House Style} as string,",
-				"          {Overall Qual} as string,",
-				"          {Overall Cond} as string,",
-				"          {Year Built} as string,",
-				"          {Year Remod/Add} as string",
+				"          {Overall Qual} as integer,",
+				"          {Overall Cond} as integer,",
+				"          {Year Built} as date,",
+				"          {Year Remod/Add} as date",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -119,7 +135,27 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SQLSaleProperties"
+				"     format: 'table') ~> SQLSaleProperties",
+				"AmesPropertyCSV, SQLAmesdbtemp join(AmesPropertyCSV@PID == SQLAmesdbtemp@pid,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"SQLFloorDetail aggregate(groupBy(pid),",
+				"     TotalBedroom = sum(bedrooms),",
+				"          TotalFullBath = sum({Full Bath}),",
+				"          TotalHalfBath = sum({Half Bath})) ~> aggFloorDetail",
+				"join1, aggFloorDetail join(AmesPropertyCSV@PID == aggFloorDetail@pid,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join2",
+				"SQLSaleProperties derive(saleprice = toInteger(SalePrice)) ~> convSalesProperties",
+				"join2, convSalesProperties join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join3"
 			]
 		}
 	}
