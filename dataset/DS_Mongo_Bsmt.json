@@ -1,0 +1,15 @@
+{
+	"name": "DS_Mongo_Bsmt",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Mongo_Atlas",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "MongoDbAtlasCollection",
+		"schema": [],
+		"typeProperties": {
+			"collection": "bsmt"
+		}
+	}
+}
