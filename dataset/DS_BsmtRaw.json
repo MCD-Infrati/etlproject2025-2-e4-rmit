@@ -1,0 +1,20 @@
+{
+	"name": "DS_BsmtRaw",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_BlobStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "bsmt.json",
+				"folderPath": "mongo/bsmt",
+				"container": "raw"
+			}
+		},
+		"schema": {}
+	}
+}

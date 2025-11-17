@@ -1,0 +1,20 @@
+{
+	"name": "DS_PoolRaw",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_BlobStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "pool.json",
+				"folderPath": "mongo/pool",
+				"container": "raw"
+			}
+		},
+		"schema": {}
+	}
+}
