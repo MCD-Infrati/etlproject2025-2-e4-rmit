@@ -77,6 +77,9 @@
 				},
 				{
 					"name": "joinMisc"
+				},
+				{
+					"name": "drvFixNulls"
 				}
 			],
 			"scriptLines": [
@@ -233,7 +236,12 @@
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> joinMisc"
+				"     broadcast: 'auto')~> joinMisc",
+				"joinMisc derive({Garage Finish} = iif(isNull({Garage Finish}), 'NA', {Garage Finish}),",
+				"          {Garage Qual} = iif(isNull({Garage Qual}), 'NA', {Garage Qual}),",
+				"          {Garage Cond} = iif(isNull({Garage Cond}), 'NA', {Garage Cond}),",
+				"          {Garage Type} = iif(isNull({Garage Type}), 'NA', {Garage Type}),",
+				"          {Pool QC} = iif(isNull({Pool QC}), 'NA', {Pool QC})) ~> drvFixNulls"
 			]
 		}
 	}
