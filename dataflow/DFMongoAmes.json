@@ -53,11 +53,50 @@
 				},
 				{
 					"name": "selMisc"
+				},
+				{
+					"name": "joinGarage"
+				},
+				{
+					"name": "drvGarageFixTypes"
+				},
+				{
+					"name": "drvBsmtFixTypes"
+				},
+				{
+					"name": "drvPooltFixTypes"
+				},
+				{
+					"name": "drvMisctFixTypes"
+				},
+				{
+					"name": "joinBsmt"
+				},
+				{
+					"name": "joinPool"
 				}
 			],
 			"scriptLines": [
 				"source(output(",
-				"          {PID;Lot Frontage;Lot Area;Street;Alley;Lot Shape;Land Contour;Utilities;Lot Config;Land Slope;Neighborhood;Condition 1;Condition 2;Bldg Type;House Style;Overall Qual;Overall Cond;Year Built;Year Remod/Add} as string",
+				"          PID as integer,",
+				"          {Lot Frontage} as short,",
+				"          {Lot Area} as integer,",
+				"          Street as string,",
+				"          Alley as string,",
+				"          {Lot Shape} as string,",
+				"          {Land Contour} as string,",
+				"          Utilities as string,",
+				"          {Lot Config} as string,",
+				"          {Land Slope} as string,",
+				"          Neighborhood as string,",
+				"          {Condition 1} as string,",
+				"          {Condition 2} as string,",
+				"          {Bldg Type} as string,",
+				"          {House Style} as string,",
+				"          {Overall Qual} as short,",
+				"          {Overall Cond} as short,",
+				"          {Year Built} as short,",
+				"          {Year Remod/Add} as short",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -158,7 +197,35 @@
 				"          PID",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> selMisc"
+				"     skipDuplicateMapOutputs: true) ~> selMisc",
+				"srcAmesBase, drvGarageFixTypes join(srcAmesBase@PID == {PID Int},",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinGarage",
+				"selGarage derive({PID Int} = toInteger(PID.{$numberLong}),",
+				"          {Garage Area Int} = toInteger(PID.{$numberLong}),",
+				"          {Garage Yr Blt Int} = toInteger(PID.{$numberLong})) ~> drvGarageFixTypes",
+				"selBsmt derive({PID Int} = toInteger(PID.{$numberLong}),",
+				"          {BsmtFin SF 1 Int} = toInteger({BsmtFin SF 1}.{$numberLong}),",
+				"          {BsmtFin SF 2 Int} = toInteger({BsmtFin SF 2}.{$numberLong}),",
+				"          {Bsmt Unf SF Int} = toInteger({Bsmt Unf SF}.{$numberLong}),",
+				"          {Total Bsmt SF Int} = toInteger({Total Bsmt SF}.{$numberLong}),",
+				"          {Bsmt Full Bath Int} = toInteger({Bsmt Full Bath}.{$numberLong})) ~> drvBsmtFixTypes",
+				"selPool derive({PID int} = toInteger(PID.{$numberLong}),",
+				"          {Pool Area Int} = toInteger({Pool Area}.{$numberLong})) ~> drvPooltFixTypes",
+				"selMisc derive({PID int} = toInteger(PID.{$numberLong}),",
+				"          {Misc Val Int} = toInteger({Misc Val}.{$numberLong})) ~> drvMisctFixTypes",
+				"joinGarage, drvBsmtFixTypes join(drvGarageFixTypes@{PID Int} == drvBsmtFixTypes@{PID Int},",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinBsmt",
+				"joinBsmt, drvPooltFixTypes join(drvBsmtFixTypes@{PID Int} == drvPooltFixTypes@{PID int},",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinPool"
 			]
 		}
 	}
