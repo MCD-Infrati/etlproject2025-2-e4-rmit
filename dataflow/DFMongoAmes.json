@@ -83,6 +83,9 @@
 				},
 				{
 					"name": "drvFixNulls2"
+				},
+				{
+					"name": "select1"
 				}
 			],
 			"scriptLines": [
@@ -213,15 +216,20 @@
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> joinGarage",
 				"selGarage derive({PID Int} = toInteger(PID.{$numberLong}),",
-				"          {Garage Area Int} = toInteger(PID.{$numberLong}),",
-				"          {Garage Yr Blt Int} = toInteger(PID.{$numberLong}),",
+				"          {Garage Area Int} = toInteger({Garage Area}.{$numberLong}),",
+				"          {Garage Yr Blt Int} = toInteger({Garage Yr Blt}.{$numberLong}),",
 				"          {Garage Cars Int} = toInteger({Garage Cars}.{$numberLong})) ~> drvGarageFixTypes",
 				"selBsmt derive({PID Int} = toInteger(PID.{$numberLong}),",
 				"          {BsmtFin SF 1 Int} = toInteger({BsmtFin SF 1}.{$numberLong}),",
 				"          {BsmtFin SF 2 Int} = toInteger({BsmtFin SF 2}.{$numberLong}),",
 				"          {Bsmt Unf SF Int} = toInteger({Bsmt Unf SF}.{$numberLong}),",
 				"          {Total Bsmt SF Int} = toInteger({Total Bsmt SF}.{$numberLong}),",
-				"          {Bsmt Full Bath Int} = toInteger({Bsmt Full Bath}.{$numberLong})) ~> drvBsmtFixTypes",
+				"          {Bsmt Full Bath Int} = toInteger({Bsmt Full Bath}.{$numberLong}),",
+				"          {Bsmt Half Bath Int} = iif(\r",
+				"    isNull({Bsmt Half Bath}.{$numberLong}),\r",
+				"    0,\r",
+				"    iif({Bsmt Half Bath}.{$numberLong}, 1, 0)\r",
+				")) ~> drvBsmtFixTypes",
 				"selPool derive({PID Int} = toInteger(PID.{$numberLong}),",
 				"          {Pool Area Int} = toInteger({Pool Area}.{$numberLong})) ~> drvPooltFixTypes",
 				"selMisc derive({PID Int} = toInteger(PID.{$numberLong}),",
@@ -254,14 +262,23 @@
 				"          {BsmtFin Type 2} = iif(isNull({BsmtFin Type 2}), 'NA', {BsmtFin Type 2})) ~> drvFixNulls1",
 				"drvFixNulls1 derive({Garage Yr Blt Int} = iif(isNull({Garage Yr Blt Int}), 0, {Garage Yr Blt Int}),",
 				"          {Garage Area Int} = iif(isNull({Garage Area Int}), 0, {Garage Area Int}),",
-				"          {Garage Cars} = iif(isNull({Garage Cars Int}), 0, {Garage Cars Int}),",
+				"          {Garage Cars Int} = iif(isNull({Garage Cars Int}), 0, {Garage Cars Int}),",
 				"          {Pool Area Int} = iif(isNull({Pool Area Int}), 0, {Pool Area Int}),",
 				"          {Misc Val Int} = iif(isNull({Misc Val Int}), 0, {Misc Val Int}),",
 				"          {Bsmt Full Bath Int} = iif(isNull({Bsmt Full Bath Int}), 0, {Bsmt Full Bath Int}),",
 				"          {BsmtFin SF 1 Int} = iif(isNull({BsmtFin SF 1 Int}), 0, {BsmtFin SF 1 Int}),",
 				"          {BsmtFin SF 2 Int} = iif(isNull({BsmtFin SF 2 Int}), 0, {BsmtFin SF 2 Int}),",
 				"          {Bsmt Unf SF Int} = iif(isNull({Bsmt Unf SF Int}), 0, {Bsmt Unf SF Int}),",
-				"          {Total Bsmt SF Int} = iif(isNull({Total Bsmt SF Int}), 0, {Total Bsmt SF Int})) ~> drvFixNulls2"
+				"          {Total Bsmt SF Int} = iif(isNull({Total Bsmt SF Int}), 0, {Total Bsmt SF Int}),",
+				"          {Lot Frontage} = iif(isNull({Lot Frontage}), 0, toInteger({Lot Frontage})),",
+				"          {Year Remod/Add} = iif(isNull({Year Remod/Add}), 0, toInteger({Year Remod/Add})),",
+				"          {Bsmt Half Bath Int} = iif(isNull({Bsmt Half Bath Int}), 0, {Bsmt Half Bath Int})) ~> drvFixNulls2",
+				"drvFixNulls2 select(mapColumn(",
+				"          each(match(/* All input columns */ true()),",
+				"               /* Input name */ $$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1"
 			]
 		}
 	}
