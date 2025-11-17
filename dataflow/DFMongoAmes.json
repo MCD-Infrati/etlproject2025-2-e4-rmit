@@ -74,6 +74,9 @@
 				},
 				{
 					"name": "joinPool"
+				},
+				{
+					"name": "joinMisc"
 				}
 			],
 			"scriptLines": [
@@ -225,7 +228,12 @@
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> joinPool"
+				"     broadcast: 'auto')~> joinPool",
+				"joinPool, drvMisctFixTypes join(drvPooltFixTypes@{PID int} == drvMisctFixTypes@{PID int},",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinMisc"
 			]
 		}
 	}
