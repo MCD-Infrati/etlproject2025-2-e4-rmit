@@ -85,7 +85,7 @@
 					"name": "drvFixNulls2"
 				},
 				{
-					"name": "select1"
+					"name": "selFinal"
 				}
 			],
 			"scriptLines": [
@@ -274,11 +274,50 @@
 				"          {Year Remod/Add} = iif(isNull({Year Remod/Add}), 0, toInteger({Year Remod/Add})),",
 				"          {Bsmt Half Bath Int} = iif(isNull({Bsmt Half Bath Int}), 0, {Bsmt Half Bath Int})) ~> drvFixNulls2",
 				"drvFixNulls2 select(mapColumn(",
-				"          each(match(/* All input columns */ true()),",
-				"               /* Input name */ $$ = $$)",
+				"          PID = srcAmesBase@PID,",
+				"          {Lot Frontage},",
+				"          {Lot Area},",
+				"          Street,",
+				"          Alley,",
+				"          {Lot Shape},",
+				"          {Land Contour},",
+				"          Utilities,",
+				"          {Lot Config},",
+				"          {Land Slope},",
+				"          Neighborhood,",
+				"          {Condition 1},",
+				"          {Condition 2},",
+				"          {Bldg Type},",
+				"          {House Style},",
+				"          {Overall Qual},",
+				"          {Overall Cond},",
+				"          {Year Built},",
+				"          {Year Remod/Add},",
+				"          {Garage Cond},",
+				"          {Garage Finish},",
+				"          {Garage Qual},",
+				"          {Garage Type},",
+				"          {Garage Area} = {Garage Area Int},",
+				"          {Garage Yr Blt} = {Garage Yr Blt Int},",
+				"          {Garage Cars} = {Garage Cars Int},",
+				"          {Bsmt Cond},",
+				"          {Bsmt Exposure},",
+				"          {Bsmt Qual},",
+				"          {BsmtFin Type 1},",
+				"          {BsmtFin Type 2},",
+				"          {BsmtFin SF 1} = {BsmtFin SF 1 Int},",
+				"          {BsmtFin SF 2} = {BsmtFin SF 2 Int},",
+				"          {Bsmt Unf SF} = {Bsmt Unf SF Int},",
+				"          {Total Bsmt SF} = {Total Bsmt SF Int},",
+				"          {Bsmt Full Bath} = {Bsmt Full Bath Int},",
+				"          {Bsmt Half Bath} = {Bsmt Half Bath Int},",
+				"          {Pool QC},",
+				"          {Pool Area} = {Pool Area Int},",
+				"          {Misc Feature},",
+				"          {Misc Val} = {Misc Val Int}",
 				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1"
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> selFinal"
 			]
 		}
 	}
