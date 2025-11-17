@@ -79,7 +79,10 @@
 					"name": "joinMisc"
 				},
 				{
-					"name": "drvFixNulls"
+					"name": "drvFixNulls1"
+				},
+				{
+					"name": "drvFixNulls2"
 				}
 			],
 			"scriptLines": [
@@ -211,7 +214,8 @@
 				"     broadcast: 'auto')~> joinGarage",
 				"selGarage derive({PID Int} = toInteger(PID.{$numberLong}),",
 				"          {Garage Area Int} = toInteger(PID.{$numberLong}),",
-				"          {Garage Yr Blt Int} = toInteger(PID.{$numberLong})) ~> drvGarageFixTypes",
+				"          {Garage Yr Blt Int} = toInteger(PID.{$numberLong}),",
+				"          {Garage Cars Int} = toInteger({Garage Cars}.{$numberLong})) ~> drvGarageFixTypes",
 				"selBsmt derive({PID Int} = toInteger(PID.{$numberLong}),",
 				"          {BsmtFin SF 1 Int} = toInteger({BsmtFin SF 1}.{$numberLong}),",
 				"          {BsmtFin SF 2 Int} = toInteger({BsmtFin SF 2}.{$numberLong}),",
@@ -241,7 +245,23 @@
 				"          {Garage Qual} = iif(isNull({Garage Qual}), 'NA', {Garage Qual}),",
 				"          {Garage Cond} = iif(isNull({Garage Cond}), 'NA', {Garage Cond}),",
 				"          {Garage Type} = iif(isNull({Garage Type}), 'NA', {Garage Type}),",
-				"          {Pool QC} = iif(isNull({Pool QC}), 'NA', {Pool QC})) ~> drvFixNulls"
+				"          {Pool QC} = iif(isNull({Pool QC}), 'NA', {Pool QC}),",
+				"          {Misc Feature} = iif(isNull({Misc Feature}), 'NA', {Misc Feature}),",
+				"          {Bsmt Qual} = iif(isNull({Bsmt Qual}), 'NA', {Bsmt Qual}),",
+				"          {Bsmt Cond} = iif(isNull({Bsmt Cond}), 'NA', {Bsmt Cond}),",
+				"          {Bsmt Exposure} = iif(isNull({Bsmt Exposure}), 'NA', {Bsmt Exposure}),",
+				"          {BsmtFin Type 1} = iif(isNull({BsmtFin Type 1}), 'NA', {BsmtFin Type 1}),",
+				"          {BsmtFin Type 2} = iif(isNull({BsmtFin Type 2}), 'NA', {BsmtFin Type 2})) ~> drvFixNulls1",
+				"drvFixNulls1 derive({Garage Yr Blt Int} = iif(isNull({Garage Yr Blt Int}), 0, {Garage Yr Blt Int}),",
+				"          {Garage Area Int} = iif(isNull({Garage Area Int}), 0, {Garage Area Int}),",
+				"          {Garage Cars} = iif(isNull({Garage Cars Int}), 0, {Garage Cars Int}),",
+				"          {Pool Area Int} = iif(isNull({Pool Area Int}), 0, {Pool Area Int}),",
+				"          {Misc Val Int} = iif(isNull({Misc Val Int}), 0, {Misc Val Int}),",
+				"          {Bsmt Full Bath Int} = iif(isNull({Bsmt Full Bath Int}), 0, {Bsmt Full Bath Int}),",
+				"          {BsmtFin SF 1 Int} = iif(isNull({BsmtFin SF 1 Int}), 0, {BsmtFin SF 1 Int}),",
+				"          {BsmtFin SF 2 Int} = iif(isNull({BsmtFin SF 2 Int}), 0, {BsmtFin SF 2 Int}),",
+				"          {Bsmt Unf SF Int} = iif(isNull({Bsmt Unf SF Int}), 0, {Bsmt Unf SF Int}),",
+				"          {Total Bsmt SF Int} = iif(isNull({Total Bsmt SF Int}), 0, {Total Bsmt SF Int})) ~> drvFixNulls2"
 			]
 		}
 	}
