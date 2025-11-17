@@ -94,6 +94,9 @@
 				},
 				{
 					"name": "selFinal"
+				},
+				{
+					"name": "drvFixYearRemod"
 				}
 			],
 			"scriptLines": [
@@ -267,7 +270,8 @@
 				"          {Bsmt Cond} = iif(isNull({Bsmt Cond}), 'NA', {Bsmt Cond}),",
 				"          {Bsmt Exposure} = iif(isNull({Bsmt Exposure}), 'NA', {Bsmt Exposure}),",
 				"          {BsmtFin Type 1} = iif(isNull({BsmtFin Type 1}), 'NA', {BsmtFin Type 1}),",
-				"          {BsmtFin Type 2} = iif(isNull({BsmtFin Type 2}), 'NA', {BsmtFin Type 2})) ~> drvFixNulls1",
+				"          {BsmtFin Type 2} = iif(isNull({BsmtFin Type 2}), 'NA', {BsmtFin Type 2}),",
+				"          {Year Remod/Add} = toInteger({Year Remod/Add})) ~> drvFixNulls1",
 				"drvFixNulls1 derive({Garage Yr Blt Int} = iif(isNull({Garage Yr Blt Int}), 0, {Garage Yr Blt Int}),",
 				"          {Garage Area Int} = iif(isNull({Garage Area Int}), 0, {Garage Area Int}),",
 				"          {Garage Cars Int} = iif(isNull({Garage Cars Int}), 0, {Garage Cars Int}),",
@@ -281,7 +285,7 @@
 				"          {Lot Frontage} = iif(isNull({Lot Frontage}), 0, toInteger({Lot Frontage})),",
 				"          {Year Remod/Add} = iif(isNull({Year Remod/Add}), 0, toInteger({Year Remod/Add})),",
 				"          {Bsmt Half Bath Int} = iif(isNull({Bsmt Half Bath Int}), 0, {Bsmt Half Bath Int})) ~> drvFixNulls2",
-				"drvFixNulls2 select(mapColumn(",
+				"drvFixYearRemod select(mapColumn(",
 				"          PID = srcAmesBase@PID,",
 				"          {Lot Frontage},",
 				"          {Lot Area},",
@@ -326,6 +330,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: false) ~> selFinal",
+				"drvFixNulls2 derive({Year Remod/Add} = iif({Year Remod/Add} == 0, {Year Built}, {Year Remod/Add})) ~> drvFixYearRemod",
 				"selFinal sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['MongoAmes_final.csv'],",

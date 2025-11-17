@@ -11,7 +11,7 @@
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": "MongoAmes_final.csv",
-				"folderPath": "mongo",
+				"folderPath": "intermediate",
 				"container": "processed"
 			},
 			"columnDelimiter": ",",
