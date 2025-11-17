@@ -40,7 +40,15 @@
 					"name": "srcMongoMisc"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_MongoAmes_Output",
+						"type": "DatasetReference"
+					},
+					"name": "sinkMongoOutput"
+				}
+			],
 			"transformations": [
 				{
 					"name": "selBsmt"
@@ -317,7 +325,13 @@
 				"          {Misc Val} = {Misc Val Int}",
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
-				"     skipDuplicateMapOutputs: false) ~> selFinal"
+				"     skipDuplicateMapOutputs: false) ~> selFinal",
+				"selFinal sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['MongoAmes_final.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkMongoOutput"
 			]
 		}
 	}
