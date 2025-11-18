@@ -165,16 +165,12 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join3",
-				"join3 derive(GrLivArea = toInteger({1st Flr SF}) + toInteger({2nd Flr SF}) + toInteger({Low Qual Fin SF})\r",
-				") ~> derivedCalculations1",
+				"join3 derive(GrLivArea = toInteger({1st Flr SF}) + toInteger({2nd Flr SF}) + toInteger({Low Qual Fin SF})) ~> derivedCalculations1",
 				"derivedCalculations1 derive(YrSold = year({Sale Date}),",
 				"          MoSold = month({Sale Date})) ~> DerivedColumYear",
 				"DerivedColumYear derive(GrLivArea = toInteger({1st Flr SF}) + toInteger({2nd Flr SF}) + toInteger({Low Qual Fin SF}),",
-				"          YearRemodAdd = iif(\r",
-				"    isNull(`Year Remod/Add`) || trim(toString(`Year Remod/Add`)) == '',\r",
-				"    `Year Built`,\r",
-				"    `Year Remod/Add`\r",
-				")) ~> ColumnsDerivedFinal"
+				"          YearRemodAdd = coalesce(year({Year Remod/Add}), year({Year Built}))\r",
+				") ~> ColumnsDerivedFinal"
 			]
 		}
 	}
