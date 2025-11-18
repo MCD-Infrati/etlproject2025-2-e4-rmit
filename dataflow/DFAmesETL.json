@@ -173,6 +173,12 @@
 				"toInteger(coalesce({Low Qual Fin SF}, 0))\r",
 				",",
 				"          YearRemodAdd = coalesce(year({Year Remod/Add}), year({Year Built}))\r",
+				",",
+				"          Bedroom = coalesce(toInteger(TotalBedroom), 0)\r",
+				",",
+				"          FullBath = coalesce(toInteger(TotalFullBath), 0)\r",
+				",",
+				"          HalfBath = coalesce(toInteger({TotalHalfBath}), 0)\r",
 				") ~> ColumnsDerivedFinal"
 			]
 		}
