@@ -168,7 +168,10 @@
 				"join3 derive(GrLivArea = toInteger({1st Flr SF}) + toInteger({2nd Flr SF}) + toInteger({Low Qual Fin SF})) ~> derivedCalculations1",
 				"derivedCalculations1 derive(YrSold = year({Sale Date}),",
 				"          MoSold = month({Sale Date})) ~> DerivedColumYear",
-				"DerivedColumYear derive(GrLivArea = toInteger({1st Flr SF}) + toInteger({2nd Flr SF}) + toInteger({Low Qual Fin SF}),",
+				"DerivedColumYear derive(GrLivArea = toInteger(coalesce({1st Flr SF}, 0)) +\r",
+				"toInteger(coalesce({2nd Flr SF}, 0)) +\r",
+				"toInteger(coalesce({Low Qual Fin SF}, 0))\r",
+				",",
 				"          YearRemodAdd = coalesce(year({Year Remod/Add}), year({Year Built}))\r",
 				") ~> ColumnsDerivedFinal"
 			]
