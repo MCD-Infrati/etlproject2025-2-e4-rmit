@@ -64,19 +64,8 @@
 					"description": "Limpieza de valores categóricos "
 				},
 				{
-					"name": "AggModeCountExterCond"
-				},
-				{
-					"name": "WindowModeExterCond"
-				},
-				{
-					"name": "FilterModeExterCond"
-				},
-				{
-					"name": "join4"
-				},
-				{
-					"name": "ExterCondClean"
+					"name": "FillNumerics",
+					"description": "Limpieza de valores NA en las columnas numéricas"
 				}
 			],
 			"scriptLines": [
@@ -265,27 +254,7 @@
 				"    \"None\",\r",
 				"    heating\r",
 				")) ~> FillCategoricalNulls",
-				"FillCategoricalNulls aggregate(groupBy(Neighborhood,",
-				"          {Exter Cond}),",
-				"     cnt = count({Exter Cond})) ~> AggModeCountExterCond",
-				"AggModeCountExterCond window(over(Neighborhood),",
-				"     desc(cnt, true),",
-				"     asc({Exter Cond}, true),",
-				"     Mode_ExterCond = rowNumber()) ~> WindowModeExterCond",
-				"WindowModeExterCond filter(Mode_ExterCond == 1",
-				") ~> FilterModeExterCond",
-				"FillCategoricalNulls, FilterModeExterCond join(AmesPropertyCSV@Neighborhood == AggModeCountExterCond@Neighborhood,",
-				"     joinType:'left',",
-				"     matchType:'exact',",
-				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join4",
-				"join4 derive(ExterCondClean = iif(\r",
-				"    isNull({Exter Cond}),\r",
-				"    Mode_ExterCond,\r",
-				"    {Exter Cond}\r",
-				")\r",
-				"\r",
-				") ~> ExterCondClean"
+				"FillCategoricalNulls derive(ExterCondClean = iif(isNull({Exter Cond}) || trim(toString({Exter Cond})) == '' || toString({Exter Cond}) == 'NA', 0L, toLong({Exter Cond}))) ~> FillNumerics"
 			]
 		}
 	}
