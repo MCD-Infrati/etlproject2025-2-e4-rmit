@@ -254,7 +254,13 @@
 				"    \"None\",\r",
 				"    heating\r",
 				")) ~> FillCategoricalNulls",
-				"FillCategoricalNulls derive(ExterCondClean = iif(isNull({Exter Cond}) || trim(toString({Exter Cond})) == '' || toString({Exter Cond}) == 'NA', 0L, toLong({Exter Cond}))) ~> FillNumerics"
+				"FillCategoricalNulls derive(ExterCondClean = iif(isNull({Exter Cond}) || trim(toString({Exter Cond})) == '' || toString({Exter Cond}) == 'NA', 0L, toLong({Exter Cond})),",
+				"          ExterQualClean = iif(isNull({Exter Qual}) || trim(toString({Exter Qual})) == '' || toString({Exter Qual}) == 'NA', 0L, toLong({Exter Qual}))\r",
+				",",
+				"          HeatingQCClean = iif(isNull({Heating QC}) || trim(toString({Heating QC})) == '' || toString({Heating QC}) == 'NA', 0L, toLong({Heating QC})),",
+				"          KitchenQualClean = iif(isNull({Kitchen Qual}) || trim(toString({Kitchen Qual})) == '' || toString({Kitchen Qual}) == 'NA', 0L, toLong({Kitchen Qual}))\r",
+				",",
+				"          MSZoningClean = iif(isNull({MS Zoning}) || trim(toString({MS Zoning})) == '' || toString({MS Zoning}) == 'NA', 0L, toLong({MS Zoning}))) ~> FillNumerics"
 			]
 		}
 	}
