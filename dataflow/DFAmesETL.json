@@ -362,7 +362,6 @@
 				"          PavedDriveClean = iif(isNull({Paved Drive}) || trim(toString({Paved Drive})) == '' || toString({Paved Drive}) == 'NA', 'N', toString({Paved Drive}))) ~> FillBinaryCols",
 				"SelectFinal sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:[''],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> SalidaDatosaCSV"

@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "ames_clean.csv",
+				"fileName": "DS_Output_CSV",
 				"folderPath": "intermediate",
 				"container": "processed"
 			},
