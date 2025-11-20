@@ -1,0 +1,181 @@
+{
+	"name": "DFAmesETL",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AmesProperty_CSV",
+						"type": "DatasetReference"
+					},
+					"name": "AmesPropertyCSV"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_Amesdbtemp",
+						"type": "DatasetReference"
+					},
+					"name": "SQLAmesdbtemp"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_FloorDetail",
+						"type": "DatasetReference"
+					},
+					"name": "SQLFloorDetail"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_SaleProperties",
+						"type": "DatasetReference"
+					},
+					"name": "SQLSaleProperties"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "aggFloorDetail"
+				},
+				{
+					"name": "join2"
+				},
+				{
+					"name": "convSalesProperties"
+				},
+				{
+					"name": "join3"
+				},
+				{
+					"name": "derivedCalculations1"
+				},
+				{
+					"name": "DerivedColumYear"
+				},
+				{
+					"name": "ColumnsDerivedFinal"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          PID as integer,",
+				"          {Lot Frontage} as integer,",
+				"          {Lot Area} as integer,",
+				"          Street as string,",
+				"          Alley as string,",
+				"          {Lot Shape} as string,",
+				"          {Land Contour} as string,",
+				"          Utilities as string,",
+				"          {Lot Config} as string,",
+				"          {Land Slope} as string,",
+				"          Neighborhood as string,",
+				"          {Condition 1} as string,",
+				"          {Condition 2} as string,",
+				"          {Bldg Type} as string,",
+				"          {House Style} as string,",
+				"          {Overall Qual} as integer,",
+				"          {Overall Cond} as integer,",
+				"          {Year Built} as date,",
+				"          {Year Remod/Add} as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> AmesPropertyCSV",
+				"source(output(",
+				"          {Exter Cond} as long,",
+				"          {Exter Qual} as long,",
+				"          {Heating QC} as long,",
+				"          {Kitchen Qual} as long,",
+				"          {MS Zoning} as long,",
+				"          pid as long,",
+				"          {Roof Style} as string,",
+				"          {Roof Matl} as string,",
+				"          {Exterior 1st} as string,",
+				"          {Exterior 2nd} as string,",
+				"          {Mas Vnr Type} as string,",
+				"          {Mas Vnr Area} as long,",
+				"          foundation as string,",
+				"          heating as string,",
+				"          {Central Air} as boolean,",
+				"          electrical as string,",
+				"          {1st Flr SF} as long,",
+				"          {2nd Flr SF} as long,",
+				"          {Low Qual Fin SF} as long,",
+				"          {Kitchen AbvGr} as long,",
+				"          {TotRms AbvGrd} as long,",
+				"          functional as string,",
+				"          fireplaces as long,",
+				"          {Fireplace Qu} as string,",
+				"          {Paved Drive} as string,",
+				"          {Wood Deck SF} as long,",
+				"          {Open Porch SF} as long,",
+				"          {Enclosed Porch} as long,",
+				"          {3Ssn Porch} as long,",
+				"          {Screen Porch} as long,",
+				"          fence as string,",
+				"          {MS SubClass} as long",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SQLAmesdbtemp",
+				"source(output(",
+				"          pid as long,",
+				"          Floor as long,",
+				"          bedrooms as long,",
+				"          {Full Bath} as long,",
+				"          {Half Bath} as long",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SQLFloorDetail",
+				"source(output(",
+				"          pid as long,",
+				"          {Sale Date} as timestamp,",
+				"          {Sale Type} as string,",
+				"          {Sale Condition} as string,",
+				"          saleprice as long",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SQLSaleProperties",
+				"AmesPropertyCSV, SQLAmesdbtemp join(AmesPropertyCSV@PID == SQLAmesdbtemp@pid,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"SQLFloorDetail aggregate(groupBy(pid),",
+				"     TotalBedroom = sum(bedrooms),",
+				"          TotalFullBath = sum({Full Bath}),",
+				"          TotalHalfBath = sum({Half Bath})) ~> aggFloorDetail",
+				"join1, aggFloorDetail join(AmesPropertyCSV@PID == aggFloorDetail@pid,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join2",
+				"SQLSaleProperties derive(saleprice = toInteger(saleprice)) ~> convSalesProperties",
+				"join2, convSalesProperties join(AmesPropertyCSV@PID == SQLSaleProperties@pid,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join3",
+				"join3 derive(GrLivArea = toInteger({1st Flr SF}) + toInteger({2nd Flr SF}) + toInteger({Low Qual Fin SF})\r",
+				") ~> derivedCalculations1",
+				"derivedCalculations1 derive(YrSold = year({Sale Date}),",
+				"          MoSold = month({Sale Date})) ~> DerivedColumYear",
+				"DerivedColumYear derive(GrLivArea = toInteger({1st Flr SF}) + toInteger({2nd Flr SF}) + toInteger({Low Qual Fin SF}),",
+				"          YearRemodAdd = iif(\r",
+				"    isNull(`Year Remod/Add`) || trim(toString(`Year Remod/Add`)) == '',\r",
+				"    `Year Built`,\r",
+				"    `Year Remod/Add`\r",
+				")) ~> ColumnsDerivedFinal"
+			]
+		}
+	}
+}

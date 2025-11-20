@@ -1,0 +1,344 @@
+{
+	"name": "DFMongoAmes",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AmesProperty_CSV",
+						"type": "DatasetReference"
+					},
+					"name": "srcAmesBase"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_GarageRaw",
+						"type": "DatasetReference"
+					},
+					"name": "srcMongoGarage"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_BsmtRaw",
+						"type": "DatasetReference"
+					},
+					"name": "srcMongoBsmt"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_PoolRaw",
+						"type": "DatasetReference"
+					},
+					"name": "srcMongoPool"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_MiscRaw",
+						"type": "DatasetReference"
+					},
+					"name": "srcMongoMisc"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_MongoAmes_Output",
+						"type": "DatasetReference"
+					},
+					"name": "sinkMongoOutput"
+				}
+			],
+			"transformations": [
+				{
+					"name": "selBsmt"
+				},
+				{
+					"name": "selGarage"
+				},
+				{
+					"name": "selPool"
+				},
+				{
+					"name": "selMisc"
+				},
+				{
+					"name": "joinGarage"
+				},
+				{
+					"name": "drvGarageFixTypes"
+				},
+				{
+					"name": "drvBsmtFixTypes"
+				},
+				{
+					"name": "drvPooltFixTypes"
+				},
+				{
+					"name": "drvMisctFixTypes"
+				},
+				{
+					"name": "joinBsmt"
+				},
+				{
+					"name": "joinPool"
+				},
+				{
+					"name": "joinMisc"
+				},
+				{
+					"name": "drvFixNulls1"
+				},
+				{
+					"name": "drvFixNulls2"
+				},
+				{
+					"name": "selFinal"
+				},
+				{
+					"name": "drvFixYearRemod"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          PID as integer,",
+				"          {Lot Frontage} as short,",
+				"          {Lot Area} as integer,",
+				"          Street as string,",
+				"          Alley as string,",
+				"          {Lot Shape} as string,",
+				"          {Land Contour} as string,",
+				"          Utilities as string,",
+				"          {Lot Config} as string,",
+				"          {Land Slope} as string,",
+				"          Neighborhood as string,",
+				"          {Condition 1} as string,",
+				"          {Condition 2} as string,",
+				"          {Bldg Type} as string,",
+				"          {House Style} as string,",
+				"          {Overall Qual} as short,",
+				"          {Overall Cond} as short,",
+				"          {Year Built} as short,",
+				"          {Year Remod/Add} as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> srcAmesBase",
+				"source(output(",
+				"          {Garage Area} as ({$numberLong} as short),",
+				"          {Garage Cars} as ({$numberLong} as short),",
+				"          {Garage Cond} as string,",
+				"          {Garage Finish} as string,",
+				"          {Garage Qual} as string,",
+				"          {Garage Type} as string,",
+				"          {Garage Yr Blt} as ({$numberLong} as short),",
+				"          Order as ({$numberLong} as short),",
+				"          PID as ({$numberLong} as integer),",
+				"          {_id} as ({$oid} as string)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> srcMongoGarage",
+				"source(output(",
+				"          {Bsmt Cond} as string,",
+				"          {Bsmt Exposure} as string,",
+				"          {Bsmt Full Bath} as ({$numberLong} as short),",
+				"          {Bsmt Half Bath} as ({$numberLong} as boolean),",
+				"          {Bsmt Qual} as string,",
+				"          {Bsmt Unf SF} as ({$numberLong} as short),",
+				"          {BsmtFin SF 1} as ({$numberLong} as short),",
+				"          {BsmtFin SF 2} as ({$numberLong} as short),",
+				"          {BsmtFin Type 1} as string,",
+				"          {BsmtFin Type 2} as string,",
+				"          PID as ({$numberLong} as integer),",
+				"          {Total Bsmt SF} as ({$numberLong} as short),",
+				"          {_id} as ({$oid} as string)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> srcMongoBsmt",
+				"source(output(",
+				"          PID as ({$numberLong} as integer),",
+				"          {Pool Area} as ({$numberLong} as short),",
+				"          {Pool QC} as string,",
+				"          {_id} as ({$oid} as string)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> srcMongoPool",
+				"source(output(",
+				"          {Misc Feature} as string,",
+				"          {Misc Val} as ({$numberLong} as short),",
+				"          PID as ({$numberLong} as integer),",
+				"          {_id} as ({$oid} as string)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> srcMongoMisc",
+				"srcMongoBsmt select(mapColumn(",
+				"          {Bsmt Cond},",
+				"          {Bsmt Exposure},",
+				"          {Bsmt Full Bath},",
+				"          {Bsmt Half Bath},",
+				"          {Bsmt Qual},",
+				"          {Bsmt Unf SF},",
+				"          {BsmtFin SF 1},",
+				"          {BsmtFin SF 2},",
+				"          {BsmtFin Type 1},",
+				"          {BsmtFin Type 2},",
+				"          PID,",
+				"          {Total Bsmt SF}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selBsmt",
+				"srcMongoGarage select(mapColumn(",
+				"          {Garage Area},",
+				"          {Garage Cars},",
+				"          {Garage Cond},",
+				"          {Garage Finish},",
+				"          {Garage Qual},",
+				"          {Garage Type},",
+				"          {Garage Yr Blt},",
+				"          PID",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selGarage",
+				"srcMongoPool select(mapColumn(",
+				"          PID,",
+				"          {Pool Area},",
+				"          {Pool QC}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selPool",
+				"srcMongoMisc select(mapColumn(",
+				"          {Misc Feature},",
+				"          {Misc Val},",
+				"          PID",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selMisc",
+				"srcAmesBase, drvGarageFixTypes join(srcAmesBase@PID == {PID Int},",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinGarage",
+				"selGarage derive({PID Int} = toInteger(PID.{$numberLong}),",
+				"          {Garage Area Int} = toInteger({Garage Area}.{$numberLong}),",
+				"          {Garage Yr Blt Int} = toInteger({Garage Yr Blt}.{$numberLong}),",
+				"          {Garage Cars Int} = toInteger({Garage Cars}.{$numberLong})) ~> drvGarageFixTypes",
+				"selBsmt derive({PID Int} = toInteger(PID.{$numberLong}),",
+				"          {BsmtFin SF 1 Int} = toInteger({BsmtFin SF 1}.{$numberLong}),",
+				"          {BsmtFin SF 2 Int} = toInteger({BsmtFin SF 2}.{$numberLong}),",
+				"          {Bsmt Unf SF Int} = toInteger({Bsmt Unf SF}.{$numberLong}),",
+				"          {Total Bsmt SF Int} = toInteger({Total Bsmt SF}.{$numberLong}),",
+				"          {Bsmt Full Bath Int} = toInteger({Bsmt Full Bath}.{$numberLong}),",
+				"          {Bsmt Half Bath Int} = iif(\r",
+				"    isNull({Bsmt Half Bath}.{$numberLong}),\r",
+				"    0,\r",
+				"    iif({Bsmt Half Bath}.{$numberLong}, 1, 0)\r",
+				")) ~> drvBsmtFixTypes",
+				"selPool derive({PID Int} = toInteger(PID.{$numberLong}),",
+				"          {Pool Area Int} = toInteger({Pool Area}.{$numberLong})) ~> drvPooltFixTypes",
+				"selMisc derive({PID Int} = toInteger(PID.{$numberLong}),",
+				"          {Misc Val Int} = toInteger({Misc Val}.{$numberLong})) ~> drvMisctFixTypes",
+				"joinGarage, drvBsmtFixTypes join(drvGarageFixTypes@{PID Int} == drvBsmtFixTypes@{PID Int},",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinBsmt",
+				"joinBsmt, drvPooltFixTypes join(drvBsmtFixTypes@{PID Int} == drvPooltFixTypes@{PID Int},",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinPool",
+				"joinPool, drvMisctFixTypes join(drvPooltFixTypes@{PID Int} == drvMisctFixTypes@{PID Int},",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinMisc",
+				"joinMisc derive({Garage Finish} = iif(isNull({Garage Finish}), 'NA', {Garage Finish}),",
+				"          {Garage Qual} = iif(isNull({Garage Qual}), 'NA', {Garage Qual}),",
+				"          {Garage Cond} = iif(isNull({Garage Cond}), 'NA', {Garage Cond}),",
+				"          {Garage Type} = iif(isNull({Garage Type}), 'NA', {Garage Type}),",
+				"          {Pool QC} = iif(isNull({Pool QC}), 'NA', {Pool QC}),",
+				"          {Misc Feature} = iif(isNull({Misc Feature}), 'NA', {Misc Feature}),",
+				"          {Bsmt Qual} = iif(isNull({Bsmt Qual}), 'NA', {Bsmt Qual}),",
+				"          {Bsmt Cond} = iif(isNull({Bsmt Cond}), 'NA', {Bsmt Cond}),",
+				"          {Bsmt Exposure} = iif(isNull({Bsmt Exposure}), 'NA', {Bsmt Exposure}),",
+				"          {BsmtFin Type 1} = iif(isNull({BsmtFin Type 1}), 'NA', {BsmtFin Type 1}),",
+				"          {BsmtFin Type 2} = iif(isNull({BsmtFin Type 2}), 'NA', {BsmtFin Type 2}),",
+				"          {Year Remod/Add} = toInteger({Year Remod/Add}),",
+				"          {Year Built} = toInteger({Year Built})) ~> drvFixNulls1",
+				"drvFixNulls1 derive({Garage Yr Blt Int} = iif(isNull({Garage Yr Blt Int}), 0, {Garage Yr Blt Int}),",
+				"          {Garage Area Int} = iif(isNull({Garage Area Int}), 0, {Garage Area Int}),",
+				"          {Garage Cars Int} = iif(isNull({Garage Cars Int}), 0, {Garage Cars Int}),",
+				"          {Pool Area Int} = iif(isNull({Pool Area Int}), 0, {Pool Area Int}),",
+				"          {Misc Val Int} = iif(isNull({Misc Val Int}), 0, {Misc Val Int}),",
+				"          {Bsmt Full Bath Int} = iif(isNull({Bsmt Full Bath Int}), 0, {Bsmt Full Bath Int}),",
+				"          {BsmtFin SF 1 Int} = iif(isNull({BsmtFin SF 1 Int}), 0, {BsmtFin SF 1 Int}),",
+				"          {BsmtFin SF 2 Int} = iif(isNull({BsmtFin SF 2 Int}), 0, {BsmtFin SF 2 Int}),",
+				"          {Bsmt Unf SF Int} = iif(isNull({Bsmt Unf SF Int}), 0, {Bsmt Unf SF Int}),",
+				"          {Total Bsmt SF Int} = iif(isNull({Total Bsmt SF Int}), 0, {Total Bsmt SF Int}),",
+				"          {Lot Frontage} = iif(isNull({Lot Frontage}), 0, toInteger({Lot Frontage})),",
+				"          {Year Remod/Add} = iif(isNull({Year Remod/Add}), 0, toInteger({Year Remod/Add})),",
+				"          {Bsmt Half Bath Int} = iif(isNull({Bsmt Half Bath Int}), 0, {Bsmt Half Bath Int})) ~> drvFixNulls2",
+				"drvFixYearRemod select(mapColumn(",
+				"          PID = srcAmesBase@PID,",
+				"          {Lot Frontage},",
+				"          {Lot Area},",
+				"          Street,",
+				"          Alley,",
+				"          {Lot Shape},",
+				"          {Land Contour},",
+				"          Utilities,",
+				"          {Lot Config},",
+				"          {Land Slope},",
+				"          Neighborhood,",
+				"          {Condition 1},",
+				"          {Condition 2},",
+				"          {Bldg Type},",
+				"          {House Style},",
+				"          {Overall Qual},",
+				"          {Overall Cond},",
+				"          {Year Built},",
+				"          {Year Remod/Add},",
+				"          {Garage Cond},",
+				"          {Garage Finish},",
+				"          {Garage Qual},",
+				"          {Garage Type},",
+				"          {Garage Area} = {Garage Area Int},",
+				"          {Garage Yr Blt} = {Garage Yr Blt Int},",
+				"          {Garage Cars} = {Garage Cars Int},",
+				"          {Bsmt Cond},",
+				"          {Bsmt Exposure},",
+				"          {Bsmt Qual},",
+				"          {BsmtFin Type 1},",
+				"          {BsmtFin Type 2},",
+				"          {BsmtFin SF 1} = {BsmtFin SF 1 Int},",
+				"          {BsmtFin SF 2} = {BsmtFin SF 2 Int},",
+				"          {Bsmt Unf SF} = {Bsmt Unf SF Int},",
+				"          {Total Bsmt SF} = {Total Bsmt SF Int},",
+				"          {Bsmt Full Bath} = {Bsmt Full Bath Int},",
+				"          {Bsmt Half Bath} = {Bsmt Half Bath Int},",
+				"          {Pool QC},",
+				"          {Pool Area} = {Pool Area Int},",
+				"          {Misc Feature},",
+				"          {Misc Val} = {Misc Val Int}",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> selFinal",
+				"drvFixNulls2 derive({Year Remod/Add} = iif({Year Remod/Add} == 0, {Year Built}, {Year Remod/Add})) ~> drvFixYearRemod",
+				"selFinal sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['MongoAmes_final.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkMongoOutput"
+			]
+		}
+	}
+}

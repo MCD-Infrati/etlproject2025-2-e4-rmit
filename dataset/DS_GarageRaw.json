@@ -1,0 +1,20 @@
+{
+	"name": "DS_GarageRaw",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_BlobStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "garage.json",
+				"folderPath": "mongo/garage/",
+				"container": "raw"
+			}
+		},
+		"schema": {}
+	}
+}
