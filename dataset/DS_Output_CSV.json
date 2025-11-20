@@ -10,7 +10,8 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"folderPath": "final",
+				"fileName": "SalidaDatosaCSV",
+				"folderPath": "intermediate",
 				"container": "processed"
 			},
 			"columnDelimiter": ",",

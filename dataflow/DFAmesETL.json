@@ -33,7 +33,15 @@
 					"name": "SQLSaleProperties"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Output_CSV",
+						"type": "DatasetReference"
+					},
+					"name": "SalidaDatosaCSV"
+				}
+			],
 			"transformations": [
 				{
 					"name": "joinAmesCSVySQL"
@@ -352,7 +360,13 @@
 				"     skipDuplicateMapOutputs: true) ~> SelectFinal",
 				"FillNumerics derive(CentralAirClean = iif(isNull({Central Air}) || trim(toString({Central Air})) == '' || toString({Central Air}) == 'NA' || toString({Central Air}) == 'N', 'False', 'True')\r",
 				",",
-				"          PavedDriveClean = iif(isNull({Paved Drive}) || trim(toString({Paved Drive})) == '' || toString({Paved Drive}) == 'NA', 'N', toString({Paved Drive}))) ~> FillBinaryCols"
+				"          PavedDriveClean = iif(isNull({Paved Drive}) || trim(toString({Paved Drive})) == '' || toString({Paved Drive}) == 'NA', 'N', toString({Paved Drive}))) ~> FillBinaryCols",
+				"SelectFinal sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:[''],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SalidaDatosaCSV"
 			]
 		}
 	}
