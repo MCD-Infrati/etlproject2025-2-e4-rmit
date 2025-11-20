@@ -10,7 +10,8 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"folderPath": "final",
+				"fileName": "DS_Output_CSV",
+				"folderPath": "intermediate",
 				"container": "processed"
 			},
 			"columnDelimiter": ",",
