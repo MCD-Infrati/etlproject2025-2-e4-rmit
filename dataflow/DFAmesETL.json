@@ -36,22 +36,22 @@
 			"sinks": [],
 			"transformations": [
 				{
-					"name": "join1"
+					"name": "joinAmesCSVySQL"
 				},
 				{
 					"name": "aggFloorDetail"
 				},
 				{
-					"name": "join2"
+					"name": "joinFloorDetail"
 				},
 				{
 					"name": "convSalesProperties"
 				},
 				{
-					"name": "join3"
+					"name": "joinSaleProperties"
 				},
 				{
-					"name": "derivedCalculations1"
+					"name": "DerivedCalculationsGrLivArea"
 				},
 				{
 					"name": "DerivedColumYear"
@@ -164,24 +164,24 @@
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join1",
+				"     broadcast: 'auto')~> joinAmesCSVySQL",
 				"SQLFloorDetail aggregate(groupBy(pid),",
 				"     TotalBedroom = sum(bedrooms),",
 				"          TotalFullBath = sum({Full Bath}),",
 				"          TotalHalfBath = sum({Half Bath})) ~> aggFloorDetail",
-				"join1, aggFloorDetail join(AmesPropertyCSV@PID == aggFloorDetail@pid,",
+				"joinAmesCSVySQL, aggFloorDetail join(AmesPropertyCSV@PID == aggFloorDetail@pid,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join2",
+				"     broadcast: 'auto')~> joinFloorDetail",
 				"SQLSaleProperties derive(saleprice = toInteger(saleprice)) ~> convSalesProperties",
-				"join2, convSalesProperties join(AmesPropertyCSV@PID == SQLSaleProperties@pid,",
+				"joinFloorDetail, convSalesProperties join(AmesPropertyCSV@PID == SQLSaleProperties@pid,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join3",
-				"join3 derive(GrLivArea = toInteger({1st Flr SF}) + toInteger({2nd Flr SF}) + toInteger({Low Qual Fin SF})) ~> derivedCalculations1",
-				"derivedCalculations1 derive(YrSold = year({Sale Date}),",
+				"     broadcast: 'auto')~> joinSaleProperties",
+				"joinSaleProperties derive(GrLivArea = toInteger({1st Flr SF}) + toInteger({2nd Flr SF}) + toInteger({Low Qual Fin SF})) ~> DerivedCalculationsGrLivArea",
+				"DerivedCalculationsGrLivArea derive(YrSold = year({Sale Date}),",
 				"          MoSold = month({Sale Date})) ~> DerivedColumYear",
 				"DerivedColumYear derive(GrLivArea = toInteger(coalesce({1st Flr SF}, 0)) +\r",
 				"toInteger(coalesce({2nd Flr SF}, 0)) +\r",
