@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "part-00000-e2e98c71-0a9e-41ad-a613-5c0e51029b66-c000.csv",
+				"fileName": "DS_Output_CSV",
 				"folderPath": "intermediate",
 				"container": "processed"
 			},
