@@ -31,6 +31,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "SQLSaleProperties"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_MSZoning",
+						"type": "DatasetReference"
+					},
+					"name": "SQLMSZoning"
 				}
 			],
 			"sinks": [
@@ -81,6 +88,9 @@
 				{
 					"name": "FillBinaryCols",
 					"description": "Se corrige los nulls de las columnas binarias"
+				},
+				{
+					"name": "joinMSZoning"
 				}
 			],
 			"scriptLines": [
@@ -168,6 +178,15 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> SQLSaleProperties",
+				"source(output(",
+				"          id as long,",
+				"          description as string,",
+				"          code as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SQLMSZoning",
 				"AmesPropertyCSV, SQLAmesdbtemp join(AmesPropertyCSV@PID == SQLAmesdbtemp@pid,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
@@ -188,7 +207,7 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> joinSaleProperties",
-				"joinSaleProperties derive(GrLivArea = toInteger({1st Flr SF}) + toInteger({2nd Flr SF}) + toInteger({Low Qual Fin SF})) ~> DerivedCalculationsGrLivArea",
+				"joinMSZoning derive(GrLivArea = toInteger({1st Flr SF}) + toInteger({2nd Flr SF}) + toInteger({Low Qual Fin SF})) ~> DerivedCalculationsGrLivArea",
 				"DerivedCalculationsGrLivArea derive(YrSold = year({Sale Date}),",
 				"          MoSold = month({Sale Date})) ~> DerivedColumYear",
 				"DerivedColumYear derive(GrLivArea = toInteger(coalesce({1st Flr SF}, 0)) +\r",
@@ -360,6 +379,11 @@
 				"     skipDuplicateMapOutputs: true) ~> SelectFinal",
 				"FillNumerics derive(CentralAirClean = iif(isNull({Central Air}) || trim(toString({Central Air})) == '' || toString({Central Air}) == 'NA' || toString({Central Air}) == 'N', 'False', 'True'),",
 				"          PavedDriveClean = iif(isNull({Paved Drive}) || trim(toString({Paved Drive})) == '' || toString({Paved Drive}) == 'NA', 'N', toString({Paved Drive}))) ~> FillBinaryCols",
+				"joinSaleProperties, SQLMSZoning join({MS Zoning} == id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinMSZoning",
 				"SelectFinal sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
