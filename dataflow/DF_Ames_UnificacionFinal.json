@@ -269,7 +269,7 @@
 				"     skipDuplicateMapOutputs: true) ~> ColsFinaltoExport",
 				"ColsFinaltoExport sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:[''],",
+				"     partitionFileNames:['Ames_Final.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> SinkFinal"
