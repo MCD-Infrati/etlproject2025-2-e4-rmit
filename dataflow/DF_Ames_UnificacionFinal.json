@@ -21,6 +21,10 @@
 			],
 			"sinks": [
 				{
+					"dataset": {
+						"referenceName": "DS_Ames_Final_Output",
+						"type": "DatasetReference"
+					},
 					"name": "SinkFinal"
 				}
 			],
@@ -265,8 +269,10 @@
 				"     skipDuplicateMapOutputs: true) ~> ColsFinaltoExport",
 				"ColsFinaltoExport sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     partitionFileNames:[''],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SinkFinal"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SinkFinal"
 			]
 		}
 	}
