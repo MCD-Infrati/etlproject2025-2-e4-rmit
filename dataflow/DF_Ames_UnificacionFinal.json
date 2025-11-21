@@ -92,7 +92,7 @@
 				"source(output(",
 				"          PID as integer,",
 				"          MSSubClass as short,",
-				"          MSZoning as short,",
+				"          MSZoning as string,",
 				"          LotFrontage as short,",
 				"          LotArea as integer,",
 				"          Street as string,",
