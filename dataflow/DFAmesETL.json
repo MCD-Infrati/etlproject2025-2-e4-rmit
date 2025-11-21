@@ -90,7 +90,7 @@
 					"description": "Se corrige los nulls de las columnas binarias"
 				},
 				{
-					"name": "joinMSZoning"
+					"name": "joinSQLMSZoning"
 				}
 			],
 			"scriptLines": [
@@ -207,7 +207,7 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> joinSaleProperties",
-				"joinMSZoning derive(GrLivArea = toInteger({1st Flr SF}) + toInteger({2nd Flr SF}) + toInteger({Low Qual Fin SF})) ~> DerivedCalculationsGrLivArea",
+				"joinSQLMSZoning derive(GrLivArea = toInteger({1st Flr SF}) + toInteger({2nd Flr SF}) + toInteger({Low Qual Fin SF})) ~> DerivedCalculationsGrLivArea",
 				"DerivedCalculationsGrLivArea derive(YrSold = year({Sale Date}),",
 				"          MoSold = month({Sale Date})) ~> DerivedColumYear",
 				"DerivedColumYear derive(GrLivArea = toInteger(coalesce({1st Flr SF}, 0)) +\r",
@@ -289,11 +289,11 @@
 				"    heating\r",
 				"),",
 				"          functionalClean = iif(\r",
-				"    isNull({functional}) \r",
-				"    || trim({functional}) == \"\" \r",
-				"    || lower({functional}) == \"na\",\r",
+				"    isNull(functional) \r",
+				"    || trim(functional) == \"\" \r",
+				"    || lower(functional) == \"na\",\r",
 				"    \"Unknown\",\r",
-				"    {functional}\r",
+				"    functional\r",
 				")) ~> FillCategoricalNulls",
 				"FillCategoricalNulls derive(ExterCondClean = iif(isNull({Exter Cond}) || trim(toString({Exter Cond})) == '' || toString({Exter Cond}) == 'NA', 0L, toLong({Exter Cond})),",
 				"          ExterQualClean = iif(isNull({Exter Qual}) || trim(toString({Exter Qual})) == '' || toString({Exter Qual}) == 'NA', 0L, toLong({Exter Qual})),",
@@ -313,7 +313,8 @@
 				"          MSSubClassClean = iif(isNull({MS SubClass}) || trim(toString({MS SubClass})) == '' || toString({MS SubClass}) == 'NA', 0L, toLong({MS SubClass})),",
 				"          LowQualFinSFClean = iif(isNull({Low Qual Fin SF}) || trim(toString({Low Qual Fin SF})) == '' || toString({Low Qual Fin SF}) == 'NA', 0L, toLong({Low Qual Fin SF})),",
 				"          KitchenAbvGrClean = iif(isNull({Kitchen AbvGr}) || trim(toString({Kitchen AbvGr})) == '' || toString({Kitchen AbvGr}) == 'NA', 0L, toLong({Kitchen AbvGr})),",
-				"          LotFrontageClean = iif(isNull({Lot Frontage}), 60, {Lot Frontage})) ~> FillNumerics",
+				"          LotFrontageClean = iif(isNull({Lot Frontage}), 60, {Lot Frontage}),",
+				"          MSZoningDecoded = ERROR_FUNCTION('')) ~> FillNumerics",
 				"FillBinaryCols select(mapColumn(",
 				"          PID = AmesPropertyCSV@PID,",
 				"          MSSubClass = MSSubClassClean,",
@@ -383,7 +384,7 @@
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> joinMSZoning",
+				"     broadcast: 'auto')~> joinSQLMSZoning",
 				"SelectFinal sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
