@@ -47,13 +47,6 @@
 						"type": "DatasetReference"
 					},
 					"name": "sinkMongoOutput"
-				},
-				{
-					"dataset": {
-						"referenceName": "PruebaBSMT",
-						"type": "DatasetReference"
-					},
-					"name": "sink1"
 				}
 			],
 			"transformations": [
@@ -344,13 +337,7 @@
 				"     partitionFileNames:['MongoAmes_final.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sinkMongoOutput",
-				"joinBsmt sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     partitionFileNames:['joinBsmt_full.csv'],",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sink1"
+				"     partitionBy('hash', 1)) ~> sinkMongoOutput"
 			]
 		}
 	}
