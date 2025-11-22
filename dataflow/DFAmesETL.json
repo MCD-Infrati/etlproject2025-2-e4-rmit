@@ -316,7 +316,7 @@
 				"          MSSubClassClean = iif(isNull({MS SubClass}) || trim(toString({MS SubClass})) == '' || toString({MS SubClass}) == 'NA', 0L, toLong({MS SubClass})),",
 				"          LowQualFinSFClean = iif(isNull({Low Qual Fin SF}) || trim(toString({Low Qual Fin SF})) == '' || toString({Low Qual Fin SF}) == 'NA', 0L, toLong({Low Qual Fin SF})),",
 				"          KitchenAbvGrClean = iif(isNull({Kitchen AbvGr}) || trim(toString({Kitchen AbvGr})) == '' || toString({Kitchen AbvGr}) == 'NA', 0L, toLong({Kitchen AbvGr})),",
-				"          LotFrontageClean = iif(isNull({Lot Frontage}), 60, {Lot Frontage})) ~> FillNumerics",
+				"          LotFrontageClean = iif(isNull({Lot Frontage}), 0, {Lot Frontage})) ~> FillNumerics",
 				"LastDecoded select(mapColumn(",
 				"          PID = AmesPropertyCSV@PID,",
 				"          MSSubClass = MSSubClassClean,",
