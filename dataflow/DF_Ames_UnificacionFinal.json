@@ -82,7 +82,7 @@
 				"          {Bsmt Full Bath} as short,",
 				"          {Bsmt Half Bath} as boolean,",
 				"          {Pool QC} as string,",
-				"          {Pool Area} as boolean,",
+				"          {Pool Area} as long,",
 				"          {Misc Feature} as string,",
 				"          {Misc Val} as boolean",
 				"     ),",
